@@ -12,11 +12,11 @@ s3 = create_s3_client()
 supported_extensions = ["png", "jpg", "jpeg", "heic"]
 logging.basicConfig(filename='upload_log.txt', level=logging.INFO, format='%(asctime)s - %(message)s')
 
-def is_file_uploaded(file_path, log_file_path='logs/output_file_path.csv'):
+def verify_file_uploaded(file_path, log_file_path='logs/output_file_path.csv'):
     with open(log_file_path, 'r') as log_file:
         return any(file_path in line for line in log_file)
 
-def is_supported_file(file_path, supported_extensions):
+def verify_supported_file(file_path, supported_extensions):
     file_extension = file_path.lower().split('.')[-1]
 
     # Check if the file extension is in the array of supported extensions
@@ -24,13 +24,14 @@ def is_supported_file(file_path, supported_extensions):
 
 def process_and_upload_to_s3(folder_path, file_name, output_log_file, errors_log_file):
     file_path = folder_path + file_name
-    # if not is_supported_file(file_path, supported_extensions):
+    # if not verify_supported_file(file_path, supported_extensions):
     #     errors_log_file.write(f"{file_name},Unsupported file type\n")
     #     errors_log_file.flush()
     #     return
 
     try:
-        if is_file_uploaded(file_path):
+        is_file_uploaded = verify_file_uploaded(file_name)
+        if is_file_uploaded:
             return
 
         compressed_image_path = compress_image(file_path)
